@@ -1,5 +1,6 @@
 package resources;
 
+
 public class CourierCard {
     private String login;
     private String password;

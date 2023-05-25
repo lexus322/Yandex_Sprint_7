@@ -1,5 +1,9 @@
 package resources;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
+
+@JsonIncludeProperties({"id"})
 public class CourierId {
     private String id;
 

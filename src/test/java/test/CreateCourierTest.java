@@ -11,11 +11,56 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.apache.http.HttpStatus.SC_CONFLICT;
-import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.*;
 
 @Feature("Создание курьера - POST /api/v1/courier")
 public class CreateCourierTest extends BaseCourierTest {
+
+    @Test
+    @DisplayName("Отправка POST запроса /api/v1/courier без поля login")
+    @Description("Невозможно создать курьера без логина")
+    public void createCourierLoginNullValueTest() {
+        generateCustomCourierData(CourierFields.PASSWORD, CourierFields.FIRST_NAME);
+        Response response = courierAction.postRequestCreateCourier(courierCard);
+        response.then().assertThat().body("message",
+                        Matchers.equalTo(ErrorMessage.NOT_ENOUGH_DATA_FOR_CREATE))
+                .and().statusCode(SC_BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("Отправка POST запроса /api/v1/courier без поля firstName")
+    @Description("Возможно создать курьера без поля firstName")
+    public void createCourierNameNullValueTest() {
+        generateCustomCourierData(CourierFields.LOGIN, CourierFields.PASSWORD);
+        Response response = courierAction.postRequestCreateCourier(courierCard);
+        response.then().assertThat().body("ok", Matchers.equalTo(true))
+                .and().statusCode(SC_CREATED);
+    }
+
+    @Test
+    @DisplayName("Отправка POST запроса /api/v1/courier с пустым полем login")
+    @Description("Невозможно создать курьера без логина")
+    public void createCourierLoginEmptyValueTest() {
+        generateCourierData();
+        courierCard.setLogin("");
+        Response response = courierAction.postRequestCreateCourier(courierCard);
+        response.then().assertThat().body("message",
+                        Matchers.equalTo(ErrorMessage.NOT_ENOUGH_DATA_FOR_CREATE))
+                .and().statusCode(SC_BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("Отправка POST запроса /api/v1/courier с пустым полем password")
+    @Description("Невозможно создать курьера без пароля")
+    public void createCourierPassEmptyValueTest() {
+        generateCourierData();
+        courierCard.setPassword("");
+        Response response = courierAction.postRequestCreateCourier(courierCard);
+        response.then().assertThat().body("message",
+                        Matchers.equalTo(ErrorMessage.NOT_ENOUGH_DATA_FOR_CREATE))
+                .and().statusCode(SC_BAD_REQUEST);
+    }
+
 
     @Test
     @DisplayName("Отправка корректного POST запроса /api/v1/courier")
@@ -38,19 +83,15 @@ public class CreateCourierTest extends BaseCourierTest {
                 .and().statusCode(SC_CONFLICT);
     }
 
-    @Test
-    @DisplayName("Отправка POST запроса /api/v1/courier без поля firstName")
-    @Description("Возможно создать курьера без поля firstName")
-    public void createCourierNameNullValueTest() {
-        generateCustomCourierData(CourierFields.LOGIN, CourierFields.PASSWORD);
-        Response response = courierAction.postRequestCreateCourier(courierCard);
-        response.then().assertThat().body("ok", Matchers.equalTo(true))
-                .and().statusCode(SC_CREATED);
-    }
 
     @After
     public void afterDelete() {
-        deleteTestCourier();
+        if (courierAction.getCourierId(courierCard) == null) {
+            System.out.println("Удаленние не требуется");
+        } else {
+            deleteTestCourier();
+            System.out.println("Удаление прошло успешно");
+        }
     }
 }
 
