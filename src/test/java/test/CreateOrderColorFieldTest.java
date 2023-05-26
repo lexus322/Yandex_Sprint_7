@@ -18,20 +18,20 @@ import static org.hamcrest.Matchers.notNullValue;
 @DisplayName("Создание заказа с параметаризиронными данными для цвета")
 @RunWith(Parameterized.class)
 public class CreateOrderColorFieldTest extends BaseOrderTest {
-    private final String testName;
+
     private final String[] color;
 
-    public CreateOrderColorFieldTest(String testName, String[] color) {
-        this.testName = testName;
+    public CreateOrderColorFieldTest(String[] color) {
+
         this.color = color;
     }
 
     @Parameterized.Parameters(name = "Значение поля color: {0}")
     public static Object[][] getColorValue() {
         Object[][] objects = {
-                {OrderColor.NO_COLOR.name(), OrderColor.NO_COLOR.getValue()},
-                {OrderColor.GRAY.name(), OrderColor.GRAY.getValue()},
-                {OrderColor.TWO_COLOR.name(), OrderColor.TWO_COLOR.getValue()},
+                {OrderColor.NO_COLOR.getValue()},
+                {OrderColor.GRAY.getValue()},
+                {OrderColor.TWO_COLOR.getValue()},
         };
         return objects;
     }
